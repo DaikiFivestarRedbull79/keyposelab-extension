@@ -4,6 +4,7 @@
   const S = {
     fps: 30,
     frameStep: 1,
+    secondStep: 1,
     marks: { in: null, out: null },
     loopEnabled: true,
     video: null,
@@ -855,7 +856,7 @@ if (opacitySlider) {
 
           const dur = Number.isFinite(v.duration) ? v.duration : Infinity;
           const cur = Number.isFinite(v.currentTime) ? v.currentTime : 0;
-          v.currentTime = Math.max(0, cur - 1);
+          v.currentTime = Math.max(0, cur - S.secondStep);
 
           if (isYouTube()) {
            
@@ -882,7 +883,7 @@ if (opacitySlider) {
 
           const dur = Number.isFinite(v.duration) ? v.duration : Infinity;
           const cur = Number.isFinite(v.currentTime) ? v.currentTime : 0;
-          v.currentTime = Math.min(dur, cur + 1);
+          v.currentTime = Math.min(dur, cur + S.secondStep);
 
           if (isYouTube()) {
             if (wasPlaying) v.play?.().catch(() => { });
@@ -1337,6 +1338,9 @@ if (opacitySlider) {
       if (txt === 'set-step-config') {
         if (Number.isFinite(message.frameStep) && message.frameStep >= 1) {
           S.frameStep = Math.round(message.frameStep);
+        }
+        if (Number.isFinite(message.secondStep) && message.secondStep > 0) {
+          S.secondStep = message.secondStep;
         }
         setTimeout(() => { try { sendResponse?.({ ok: true }); } catch {} }, 0);
         return true;

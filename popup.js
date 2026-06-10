@@ -32,7 +32,7 @@ async function applyStepConfig(frameStep, secStep) {
   updateStepLabels();
   reflectStepUI();
   try { await chrome.storage.local.set({ kfn_frame_step: cfgFrameStep, kfn_sec_step: cfgSecStep }); } catch {}
-  await sendToActiveOneWay({ txt: 'set-step-config', frameStep: cfgFrameStep });
+  await sendToActiveOneWay({ txt: 'set-step-config', frameStep: cfgFrameStep, secondStep: cfgSecStep });
 }
 
 async function initStepConfig() {
@@ -43,7 +43,7 @@ async function initStepConfig() {
   } catch {}
   updateStepLabels();
   reflectStepUI();
-  await sendToActiveOneWay({ txt: 'set-step-config', frameStep: cfgFrameStep });
+  await sendToActiveOneWay({ txt: 'set-step-config', frameStep: cfgFrameStep, secondStep: cfgSecStep });
 }
 
 $('configToggle')?.addEventListener('click', async () => {
