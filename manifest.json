@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Key Pose Lab キーポーズ・ラボ | Animation Study Player",
-  "version": "1.0.0",
-  "description": "Frame-by-frame stepping, loop marks, and chapter notes for HTML5 video.",
+  "version": "1.1.0",
+  "description": "Frame-by-frame stepping with configurable step size, loop marks, and chapter notes for HTML5 video.",
   "action": {
     "default_popup": "popup.html",
     "default_title": "Keypose Lab"
@@ -28,14 +28,14 @@
         "default": "Ctrl+L",
         "mac": "Command+L"
       },
-      "description": "+1 frame step"
+      "description": "Step forward (configurable frames)"
     },
     "step_back_frame": {
       "suggested_key": {
         "default": "Ctrl+J",
         "mac": "Command+J"
       },
-      "description": "+1 frame back"
+      "description": "Step back (configurable frames)"
     }
   }
 }
