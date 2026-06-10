@@ -230,7 +230,7 @@ async function initTheme() {
       mq.addEventListener?.('change', () => applyTheme('system'));
     }
     const btn = $('themeToggle');
-    if (btn) { btn.textContent = theme === 'dark' ? '🌙' : theme === 'light' ? '☀️' : '🖥️'; }
+    if (btn) { btn.textContent = theme === 'dark' ? '🌙 Dark' : theme === 'light' ? '☀️ Light' : '🖥️ System'; }
   } catch { }
 }
 $('themeToggle')?.addEventListener('click', async () => {
@@ -240,7 +240,7 @@ $('themeToggle')?.addEventListener('click', async () => {
     const next = (cur === 'light') ? 'dark' : (cur === 'dark') ? 'system' : 'light';
     await applyTheme(next);
     const btn = $('themeToggle');
-    if (btn) { btn.textContent = next === 'dark' ? '🌙' : next === 'light' ? '☀️' : '🖥️'; }
+    if (btn) { btn.textContent = next === 'dark' ? '🌙 Dark' : next === 'light' ? '☀️ Light' : '🖥️ System'; }
   } catch { }
 });
 

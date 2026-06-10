@@ -1333,7 +1333,6 @@ button.big.smallsec:active {
 
   <div class="topbar">
     <div class="top-left">
-      <button id="themeToggle" class="iconbtn icon-only" title="Toggle theme" aria-label="Toggle theme">🌗</button>
       <button id="toggleHud" class="iconbtn icon-only" title="Floating HUD" aria-label="Floating HUD">📌</button>
       <button id="drawPenToggle" class="iconbtn" title="Pen draw overlay">✏️</button>
       <button id="configToggle" class="iconbtn icon-only" title="Step Settings">⚙️</button>
@@ -1392,9 +1391,14 @@ button.big.smallsec:active {
 
 
   <div id="configPanel" class="panel panel--elev">
-    <div class="panel-title">⚙️ Step Config</div>
+    <div class="panel-title">⚙️ Settings</div>
 
     <div class="cfg-row">
+      <span class="cfg-lbl">Theme</span>
+      <button id="themeToggle" class="mini">🌗 System</button>
+    </div>
+
+    <div class="cfg-row" style="margin-top:8px">
       <span class="cfg-lbl">Frame step</span>
       <div class="segmented">
         <button type="button" class="fps-seg mini cfg-frame-btn" data-val="1">1F</button>
