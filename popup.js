@@ -28,7 +28,7 @@ function reflectStepUI() {
 
 async function applyStepConfig(frameStep, secStep) {
   cfgFrameStep = Math.max(1, Math.round(Number(frameStep) || 1));
-  cfgSecStep   = Math.max(0.1, Number(secStep) || 1);
+  cfgSecStep   = Math.max(1, Math.round(Number(secStep) || 1));
   updateStepLabels();
   reflectStepUI();
   try { await chrome.storage.local.set({ kfn_frame_step: cfgFrameStep, kfn_sec_step: cfgSecStep }); } catch {}
