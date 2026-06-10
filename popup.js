@@ -1,6 +1,74 @@
 
 const ST = chrome.storage.session;
 
+// === Step Config ===
+let cfgFrameStep = 1;
+let cfgSecStep   = 1;
+
+function updateStepLabels() {
+  const fl = $('labelBack'),  fr = $('labelFwd');
+  const sl = $('labelBack1s'), sr = $('labelFwd1s');
+  if (fl) fl.textContent = `−${cfgFrameStep}F`;
+  if (fr) fr.textContent = `＋${cfgFrameStep}F`;
+  if (sl) sl.textContent = `−${cfgSecStep}S`;
+  if (sr) sr.textContent = `＋${cfgSecStep}S`;
+}
+
+function reflectStepUI() {
+  document.querySelectorAll('.cfg-frame-btn').forEach(btn => {
+    btn.classList.toggle('is-active', Number(btn.dataset.val) === cfgFrameStep);
+  });
+  document.querySelectorAll('.cfg-sec-btn').forEach(btn => {
+    btn.classList.toggle('is-active', Number(btn.dataset.val) === cfgSecStep);
+  });
+  const fi = $('cfgFrameStep'), si = $('cfgSecStep');
+  if (fi) fi.value = cfgFrameStep;
+  if (si) si.value = cfgSecStep;
+}
+
+async function applyStepConfig(frameStep, secStep) {
+  cfgFrameStep = Math.max(1, Math.round(Number(frameStep) || 1));
+  cfgSecStep   = Math.max(0.1, Number(secStep) || 1);
+  updateStepLabels();
+  reflectStepUI();
+  try { await chrome.storage.local.set({ kfn_frame_step: cfgFrameStep, kfn_sec_step: cfgSecStep }); } catch {}
+  await sendToActiveOneWay({ txt: 'set-step-config', frameStep: cfgFrameStep });
+}
+
+async function initStepConfig() {
+  try {
+    const o = await chrome.storage.local.get(['kfn_frame_step', 'kfn_sec_step']);
+    if (o?.kfn_frame_step) cfgFrameStep = Number(o.kfn_frame_step);
+    if (o?.kfn_sec_step)   cfgSecStep   = Number(o.kfn_sec_step);
+  } catch {}
+  updateStepLabels();
+  reflectStepUI();
+  await sendToActiveOneWay({ txt: 'set-step-config', frameStep: cfgFrameStep });
+}
+
+$('configToggle')?.addEventListener('click', async () => {
+  const panel = $('configPanel');
+  if (!panel) return;
+  const on = panel.style.display !== 'block';
+  panel.style.display = on ? 'block' : 'none';
+  try { await ST.set({ kfn_config_open: on }); } catch {}
+});
+
+document.querySelectorAll('.cfg-frame-btn').forEach(btn => {
+  btn.addEventListener('click', () => applyStepConfig(btn.dataset.val, cfgSecStep));
+});
+document.querySelectorAll('.cfg-sec-btn').forEach(btn => {
+  btn.addEventListener('click', () => applyStepConfig(cfgFrameStep, btn.dataset.val));
+});
+$('cfgFrameStep')?.addEventListener('change', () => {
+  const v = Number($('cfgFrameStep').value);
+  if (v >= 1) applyStepConfig(v, cfgSecStep);
+});
+$('cfgSecStep')?.addEventListener('change', () => {
+  const v = Number($('cfgSecStep').value);
+  if (v > 0) applyStepConfig(cfgFrameStep, v);
+});
+
 function $(id) { return document.getElementById(id); }
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 function isBlockedUrl(url) { return /^(chrome|edge|about|file):\/\//i.test(url || ''); }
@@ -828,11 +896,11 @@ $('play').addEventListener('click', async () => {
 });
 
 $('back1s')?.addEventListener('click', async () => {
-  await sendToActiveOneWay({ txt: 'seek-rel', sec: -1 });
+  await sendToActiveOneWay({ txt: 'seek-rel', sec: -cfgSecStep });
   const st = await requestMarks(); if (st) reflectUI(st);
 });
 $('fwd1s')?.addEventListener('click', async () => {
-  await sendToActiveOneWay({ txt: 'seek-rel', sec: +1 });
+  await sendToActiveOneWay({ txt: 'seek-rel', sec: +cfgSecStep });
   const st = await requestMarks(); if (st) reflectUI(st);
 });
 
@@ -1081,10 +1149,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   ensureContentInjected();
 
   try {
-    const o = await ST.get(['oneframe_fps', 'oneframe_fps_open', 'oneframe_chapter_open']);
+    const o = await ST.get(['oneframe_fps', 'oneframe_fps_open', 'oneframe_chapter_open', 'kfn_config_open']);
     if (o?.oneframe_fps != null) { $('fpsLabel').textContent = `FPS: ${o.oneframe_fps}`; }
     if (fpsPanel) togglePanel(fpsPanel, !!o?.oneframe_fps_open);
     if (chapterPanel) togglePanel(chapterPanel, !!o?.oneframe_chapter_open);
+    const configPanel = $('configPanel');
+    if (configPanel) togglePanel(configPanel, !!o?.kfn_config_open);
 
     const scoped = await loadSegmentsForActiveTab();
     segments = normalizeSegments(scoped?.segments || []);
@@ -1104,6 +1174,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   } catch { }
 
   await initFpsUI();
+  await initStepConfig();
 
   const st = await requestMarks(); if (st) reflectUI(st);
 });

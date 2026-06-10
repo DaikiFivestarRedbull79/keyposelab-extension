@@ -3,6 +3,7 @@
   
   const S = {
     fps: 30,
+    frameStep: 1,
     marks: { in: null, out: null },
     loopEnabled: true,
     video: null,
@@ -810,8 +811,8 @@ if (opacitySlider) {
           if (!isYouTube()) {           
             await disneyEnsurePaused(v);
           }
-          v.currentTime = Math.max(0, v.currentTime - frameStepSec());
-          if (isYouTube()) {            
+          v.currentTime = Math.max(0, v.currentTime - frameStepSec() * S.frameStep);
+          if (isYouTube()) {
             if (wasPlaying) v.play?.().catch(() => { });
           } else {
             startGuard(v, 1200);
@@ -829,7 +830,7 @@ if (opacitySlider) {
           if (!isYouTube()) {
             await disneyEnsurePaused(v);
           }
-          v.currentTime = Math.min(v.duration || Number.MAX_SAFE_INTEGER, v.currentTime + frameStepSec());
+          v.currentTime = Math.min(v.duration || Number.MAX_SAFE_INTEGER, v.currentTime + frameStepSec() * S.frameStep);
           if (isYouTube()) {
             if (wasPlaying) v.play?.().catch(() => { });
           } else {
@@ -1333,9 +1334,17 @@ if (opacitySlider) {
         return true;
       }
 
+      if (txt === 'set-step-config') {
+        if (Number.isFinite(message.frameStep) && message.frameStep >= 1) {
+          S.frameStep = Math.round(message.frameStep);
+        }
+        setTimeout(() => { try { sendResponse?.({ ok: true }); } catch {} }, 0);
+        return true;
+      }
+
       if (txt === 'step-frame-forward' || txt === 'step-frame-backward') {
         const v = ensureVideo(); if (!v) return true;
-        const step = frameStepSec() * (txt === 'step-frame-backward' ? -1 : 1);
+        const step = frameStepSec() * S.frameStep * (txt === 'step-frame-backward' ? -1 : 1);
         (async () => {
           try {
             const wasPlaying = !v.paused && !v.ended;
