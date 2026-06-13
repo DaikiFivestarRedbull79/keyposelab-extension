@@ -1144,9 +1144,29 @@ async function initFpsUI() {
 }
 
 
+async function checkAndShowUpdateModal() {
+  const current = chrome.runtime.getManifest().version;
+  try {
+    const o = await chrome.storage.local.get('kfn_last_version');
+    if (o?.kfn_last_version !== current) {
+      const modal = $('updateModal');
+      if (modal) modal.style.display = 'flex';
+    }
+  } catch {}
+}
+
+$('updateClose')?.addEventListener('click', async () => {
+  const modal = $('updateModal');
+  if (modal) modal.style.display = 'none';
+  try {
+    await chrome.storage.local.set({ kfn_last_version: chrome.runtime.getManifest().version });
+  } catch {}
+});
+
 document.addEventListener('DOMContentLoaded', async () => {
   await initTheme();
   ensureContentInjected();
+  await checkAndShowUpdateModal();
 
   try {
     const o = await ST.get(['oneframe_fps', 'oneframe_fps_open', 'oneframe_chapter_open', 'kfn_config_open']);
