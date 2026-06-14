@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Key Pose Lab キーポーズ・ラボ | Animation Study Player",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Frame-by-frame stepping with configurable step size, loop marks, and chapter notes for HTML5 video.",
   "action": {
     "default_popup": "popup.html",
